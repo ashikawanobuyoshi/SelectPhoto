@@ -12,7 +12,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # for Pull Request (exclude merged)
   pullreq_build:
     name: Build(pullreq)
     if: (github.repository == 'ashikawanobuyoshi/SelectPhoto' && github.event_name == 'issue_comment' && startsWith(github.event.comment.body, '/kuroco stage') && github.event.issue.pull_request != null)
@@ -44,6 +43,9 @@ jobs:
         if: ${{ steps.node_modules_cache_id.outputs.cache-hit != 'true' }}
         run: npm ci
 
+      - name: Run tests
+        run: npm test
+
       - name: Generate
         run: npm run generate
       - name: Zip artifact for upload
@@ -63,7 +65,6 @@ jobs:
           webhook_secret: "7ef61935913a0dda1d3132d358d3b730"
           data: '{"single_zip":"1","domain":"fotostudio-malias-select.g.kuroco-front.app","pr":"${{ github.event.issue.pull_request.url }}",  "repository":"${{ github.repository }}", "run_id":"${{ github.run_id }}", "hash":"${{ steps.get_branch.outputs.sha }}"}'
           
-  #for Push
   pushed_build:
     name: Build(pushed)
     if: (github.repository == 'ashikawanobuyoshi/SelectPhoto' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch'))
@@ -83,9 +84,14 @@ jobs:
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.ref_name }}-${{ hashFiles('**/package-lock.json') }}
-      - name: Install dependencies
-        if: ${{ steps.node_modules_cache_id.outputs.cache-hit != 'true' }}
-        run: npm ci
+          - name: Install dependencies
+          run: npm install
+        - name: Install dependencies with npm ci
+          if: ${{ steps.node_modules_cache_id.outputs.cache-hit != 'true' }}
+          run: npm ci
+
+      - name: Run tests
+        run: npm test
 
       - name: Generate
         run: npm run generate
