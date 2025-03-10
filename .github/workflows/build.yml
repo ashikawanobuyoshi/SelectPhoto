@@ -14,7 +14,7 @@ concurrency:
 jobs:
   pullreq_build:
     name: Build(pullreq)
-    if: (github.repository == 'ashikawanobuyoshi/SelectPhoto' && github.event_name == 'issue_comment' && startsWith(github.event.comment.body, '/kuroco stage') && github.event.issue.pull_request != null)
+    if: (github.repository == 'ashikawanobuyoshi/SelectPhoto' && github.event_name == 'issue_comment' && startsWith(github.event.comment.body, '/kuroco stage') && github.event.issue.pull_request)
     runs-on: ubuntu-latest
     steps:
       - name: "Get branch name and sha"
@@ -63,7 +63,7 @@ jobs:
         env:
           webhook_url: "https://fotostudio-malias-select.g.kuroco.app/direct/menu/github/"
           webhook_secret: "7ef61935913a0dda1d3132d358d3b730"
-          data: '{"single_zip":"1","domain":"fotostudio-malias-select.g.kuroco-front.app","pr":"${{ github.event.issue.pull_request.url }}",  "repository":"${{ github.repository }}", "run_id":"${{ github.run_id }}", "hash":"${{ steps.get_branch.outputs.sha }}"}'
+          data: '{"single_zip":"1","domain":"fotostudio-malias-select.g.kuroco-front.app","pr":"${{ github.event.issue.pull_request.url }}",  "repository":"${{ github.repository }}", "run_id":"${{ github.run_id }}"}'
           
   pushed_build:
     name: Build(pushed)
