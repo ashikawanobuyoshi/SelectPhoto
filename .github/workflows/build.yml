@@ -84,11 +84,11 @@ jobs:
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.ref_name }}-${{ hashFiles('**/package-lock.json') }}
-          - name: Install dependencies
-          run: npm install
-        - name: Install dependencies with npm ci
-          if: ${{ steps.node_modules_cache_id.outputs.cache-hit != 'true' }}
-          run: npm ci
+      - name: Install dependencies
+        run: npm install
+      - name: Install dependencies with npm ci
+        if: ${{ steps.node_modules_cache_id.outputs.cache-hit != 'true' }}
+        run: npm ci
 
       - name: Run tests
         run: npm test
